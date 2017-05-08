@@ -24,11 +24,6 @@
     </script>
 </head>
 <body>
-<!--<body class="capped-layout">-->
-
-<!--<header class="capped-layout_cap app-banner">
-    <span class="app-banner_title">Recipe Bot</span>
-</header>-->
 
 <div id="app" class="container-fluid">
     <div class="row" style="height: 100%">
@@ -36,14 +31,14 @@
             <div class="chat-container">
                 <div class="row" style="padding-bottom: 20px;">
                     <div class="col-6" style="padding-right: 0px">
-                        <input id="message" class="form-control" aria-label="Enter your message..." class="input_text" type="text" autocomplete="off" name="message" v-model="message" placeholder="Enter your message...">
+                        <input id="message" class="form-control" aria-label="Enter your message..." class="input_text" type="text" autocomplete="off" name="message" placeholder="Enter your message..." v-model="message" v-on:keyup.13="submitMessage">
                     </div>
                     <div class="col-3" style="padding-left: 5px">
                         <button id="sendmessage" class="btn btn-default" type="submit" class="button_primary" v-on:click="submitMessage">Send</button>
                     </div>
                 </div>
                 <div class="chat-message" v-for="msg in messages">
-                    <div class="msg-body"><b>{{ msg.user }}</b>:<div v-html="msg.msg"></div></div>
+                    <div v-bind:class="[msg.isBot ? 'chat-msg-body-bot' : 'chat-msg-body-user']"><b>{{ msg.user }}</b>:<div v-html="msg.msg"></div></div>
                 </div>
             </div>
         </div>

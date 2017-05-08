@@ -2,6 +2,7 @@ require(['vue'], function(Vue) {
     var app = new Vue({
         el: '#app',
         data: {
+            botName: 'bot',
             userId: null,
             webSocketProtocol: webSocketProtocol,
             webSocket: null,
@@ -15,13 +16,15 @@ require(['vue'], function(Vue) {
         methods: {
             showOfflineMessage: function() {
                 app.messages.unshift({
-                    user: 'sous-chef',
+                    isBot: true,
+                    user: app.botName,
                     ts: new Date(),
                     msg: app.markdownConverter.makeHtml('Sorry, you are not connected! I can\'t help you right now :(')
                 });
             },
             submitMessage: function() {
                 app.messages.unshift({
+                    isBot: false,
                     user: 'Me',
                     ts: new Date(),
                     msg: app.markdownConverter.makeHtml(app.message)
@@ -83,7 +86,8 @@ require(['vue'], function(Vue) {
                         if (data.type == 'msg') {
                             console.log('Received message.');
                             app.messages.unshift({
-                                user: 'sous-chef',
+                                isBot: true,
+                                user: app.botName,
                                 ts: new Date(),
                                 msg: app.markdownConverter.makeHtml(data.text)
                             });

@@ -20,6 +20,16 @@ html, body {
 	padding: 0px 0px 0px 10px;
 }
 
+.chat-msg-body-bot {
+	background-color: lightcoral;
+	border-radius: 5px;
+}
+
+.chat-msg-body-user {
+	background-color: lightblue;
+	border-radius: 5px;
+}
+
 .editor-container {
 	height: 100%;
 	padding: 0px;
