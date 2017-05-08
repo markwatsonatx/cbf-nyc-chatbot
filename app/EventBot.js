@@ -1,6 +1,7 @@
 'use strict';
 
 const ConversationV1 = require('watson-developer-cloud/conversation/v1');
+const SlackBot = require('slackbots');
 const WebSocketBotServer = require('./WebSocketBotServer');
 
 class EventBot {
@@ -46,7 +47,28 @@ class EventBot {
      * Initializes the Slack Bot
      */
     initSlackBot() {
-        // TBD
+        this.slackBot = new SlackBot({
+            token: this.slackToken,
+            name: 'bot'
+        });
+        this.slackBot.on('start', () => {
+            console.log('Slackbot running.')
+        });
+        this.slackBot.on('message', (data) => {
+            if (data.type == 'message' && data.channel.startsWith('D')) {
+                if (!data.bot_id) {
+                    let messageSender = data.user;
+                    let message = data.text;
+                    this.processMessage(messageSender, message)
+                        .then((reply) => {
+                            this.slackBot.postMessage(data.channel, reply.text, {});
+                        });
+                }
+                else {
+                    // ignore messages from the bot (messages we sent)
+                }
+            }
+        });       
     }
 
     /**
