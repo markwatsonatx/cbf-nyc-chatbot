@@ -1,0 +1,32 @@
+html, body {
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+	overflow: hidden;
+}
+
+#app {
+	height: 100%;
+}
+
+.chat-container {
+	height: 100%;
+	max-width: 6	00px;
+	padding: 20px;
+	margin: auto;
+}
+
+.chat-message {
+	padding: 0px 0px 0px 10px;
+}
+
+.editor-container {
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+}
+
+#editor {
+	height: 100%;
+	width: 100%;
+}
