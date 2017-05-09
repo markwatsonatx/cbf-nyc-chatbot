@@ -5,6 +5,12 @@ const prompt = require('prompt');
  
 class MyBot {
 
+    /**
+     * Creates a new instance of MyBot.
+     * @param {string} conversationUsername - The Watson Conversation username
+     * @param {string} conversationPassword - The Watson Converation password
+     * @param {string} conversationWorkspaceId - The Watson Conversation workspace ID
+     */
     constructor(conversationUsername, conversationPassword, conversationWorkspaceId) {
         this.conversationService = new ConversationV1({
             username: conversationUsername,
@@ -17,18 +23,24 @@ class MyBot {
     }
 
      /**
-     * Starts the bot.
+     * Runs the bot.
      */
     run() {
         prompt.start();
         this.promptUser();
     }
 
+    /**
+     * Prompts the user for the next message.
+     */
     promptUser() {
         prompt.get([{name: 'message', message: 'Enter your message'}], (err, result) => {
             if (err || result.message == 'quit') {
                 process.exit();
             }
+            // The user's message is in result.message
+            // Here we pass it to the processMessage function which will ultimately return a Promise
+            // that when fulfilled contains the reply to send to the user.
             this.processMessage(result.message)
                 .then((reply) => {
                     console.log('MyBot: ' + reply);
@@ -37,6 +49,11 @@ class MyBot {
         });
     }
 
+    /**
+     * Process the message entered by the user
+     * @param {string} message - The message entered by the user
+     * @returns {Promise.<string|Error>} - The reply to sent to the user if fulfilled, or an error if rejected
+     */
     processMessage(message) {
         // The first step is to send the message entered by the user to Watson Conversation.
         // We send the conversationContext associated with the current user.
@@ -51,10 +68,10 @@ class MyBot {
                 return this.handleResponseFromWatsonConversation(conversationResponse);
             })
             .then((reply) => {
-                // Update our local conversationContext every time we receive a response
-                // from Watson Conversation. This keeps track of the active dialog in the conversation.
+                // Update our local conversationContext every time we receive a response from Watson Conversation.
+                // This keeps track of the active dialog in the conversation.
                 this.conversationContext = conversationResponse.context;
-                // Reply to the user
+                // Reply to the user.
                 return Promise.resolve(reply);
             })
             .catch((error) => {
@@ -64,6 +81,13 @@ class MyBot {
             });
     }
 
+    /**
+     * Sends the message entered by the user to Watson Conversation
+     * along with the active Watson Conversation context that is used to keep track of the conversation.
+     * @param {string} message - The message entered by the user
+     * @param {object} conversationContext - The active Watson Conversation context
+     * @returns {Proimse.<object|error>} - The response from Watson Conversation if fulfilled, or an error if rejected
+     */
     sendRequestToWatsonConversation(message, conversationContext) {
         return new Promise((resolve, reject) => {
             var conversationRequest = {
@@ -83,20 +107,20 @@ class MyBot {
     }
     
     /**
-     * Takes the initial response from Watson Conversation, performs any
-     * additional steps that may be required, and updates the response to include
-     * the reply that should be sent to the user.
-     * @param {Object} conversationResponse - The initial response from Watson Conversation
+     * Takes the response from Watson Conversation, performs any additional steps
+     * that may be required, and returns the reply that should be sent to the user.
+     * @param {object} conversationResponse - The response from Watson Conversation
+     * @returns {Promise.<string|error>} - The reply to send to the user if fulfilled, or an error if rejected
      */
     handleResponseFromWatsonConversation(conversationResponse) {
-        // Every dialog in our workspace has been configured with a custom "action".
-        // that is sent in the Watson Conversation context
-        // In some cases we need to take special steps and return a customized response
-        // for an action (for example, return a the response of a 3rd party API call) 
-        // In other cases we'll just return the response configured in the Watson Conversation dialog
-        const action = conversationResponse.context.action;
+        // In some cases we just return the response defined in Watson Conversation.
+        // In others we need to take special steps to return a customized response.
+        // For example, we may need to return the results of a databse lookup or 3rd party API call.
+        // Here we look to see if a custom "action" has been configured in Watson Conversation and if we
+        // need to return a custom response based on the action. 
+        const action = conversationResponse.context.myaction;
         if (action == "xxx") {
-            return this.handleXXXMessage(conversationResponse);
+             return this.handleXXXMessage(conversationResponse);
         }
         else {
             return this.handleGenericMessage(conversationResponse);
@@ -104,9 +128,20 @@ class MyBot {
     }
 
     /**
-     * Handles a generic message from Watson Conversation, one that requires no additional steps
-     * Returns the reply that was configured in the Watson Conversation dialog
-     * @param {Object} conversationResponse - The response from Watson Conversation
+     * Returns a custom response to the user.
+     * @param {object} conversationResponse - The response from Watson Conversation
+     * @returns {Promise.<string|error>} - The reply to send to the user if fulfilled, or an error if rejected
+     */
+    handleXXXMessage(conversationResponse) {
+        let reply = 'TBD';
+        return Promise.resolve(reply);
+    }
+
+    /**
+     * Handles a generic message from Watson Conversation, one that requires no additional steps.
+     * Returns the reply that was configured in the Watson Conversation dialog.
+     * @param {object} conversationResponse - The response from Watson Conversation
+     * @returns {Promise.<string|error>} - The reply to send to the user if fulfilled, or an error if rejected
      */
     handleGenericMessage(conversationResponse) {
         let reply = '';
