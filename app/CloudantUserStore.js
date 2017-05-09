@@ -83,7 +83,6 @@ class CloudantUserStore {
      * @returns {Promise.<TResult>}
      */
     updateUser(user, context) {
-        console.log("Hello " + user._id + " --> " + context);
         return this.db.get(user._id)
             .then((userDoc) => {
                 let doc = userDoc;

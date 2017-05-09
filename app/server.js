@@ -20,6 +20,8 @@ const http = require('http').Server(app);
         process.env.CONVERSATION_USERNAME,
         process.env.CONVERSATION_PASSWORD,
         process.env.CONVERSATION_WORKSPACE_ID,
+        process.env.FOURSQUARE_CLIENT_ID,
+        process.env.FOURSQUARE_CLIENT_SECRET,
         process.env.SLACK_BOT_TOKEN,
         http
     );

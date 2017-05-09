@@ -3,13 +3,13 @@
 const ConversationV1 = require('watson-developer-cloud/conversation/v1');
 const SlackBot = require('slackbots');
 const WebSocketBotServer = require('./WebSocketBotServer');
-
+const Foursquare = require('foursquarevenues');
+ 
 class EventBot {
 
-    constructor(userStore, dialogStore, conversationUsername, conversationPassword, conversationWorkspaceId, slackToken, httpServer) {
+    constructor(userStore, dialogStore, conversationUsername, conversationPassword, conversationWorkspaceId, foursquareClientId, foursquareClientSecret, slackToken, httpServer) {
         this.userStore = userStore;
         this.dialogStore = dialogStore;
-        this.slackToken = slackToken;
         this.dialogQueue = [];
         this.conversationService = new ConversationV1({
             username: conversationUsername,
@@ -18,6 +18,10 @@ class EventBot {
             minimum_confidence: 0.50 // (Optional) Default is 0.75
         });
         this.conversationWorkspaceId = conversationWorkspaceId;
+        if (foursquareClientId && foursquareClientSecret) {
+            this.foursquareClient = Foursquare(foursquareClientId, foursquareClientSecret);
+        }
+        this.slackToken = slackToken;
         this.httpServer = httpServer;
     }
 
@@ -254,8 +258,8 @@ class EventBot {
                 // for an action (for example, return a list of recipes) 
                 // In other cases we'll just return the response configured in the Watson Conversation dialog
                 const action = conversationResponse.context.action;
-                if (action == "xxx") {
-                    return this.handleXXXMessage(conversationResponse);
+                if (action == "findDoctorLocation") {
+                    return this.handleFindDoctorLocationMessage(conversationResponse);
                 }
                 else {
                     return this.handleGenericMessage(conversationResponse);
@@ -286,6 +290,47 @@ class EventBot {
             reply += conversationResponse.output.text[i] + '\n';
         }
         return Promise.resolve(reply);
+    }
+
+    /**
+     * Handles a generic message from Watson Conversation, one that requires no additional steps
+     * Returns the reply that was configured in the Watson Conversation dialog
+     * @param {Object} conversationResponse - The response from Watson Conversation
+     */
+    handleFindDoctorLocationMessage(conversationResponse) {
+        let location = '';
+        for (let i=0; i<conversationResponse.entities.length; i++) {
+            if (conversationResponse.entities[0].entity == 'sys-location') {
+                if (location.length > 0) {
+                    location += ' ';
+                }
+                location += conversationResponse.entities[0].value;
+            }
+        }
+        return new Promise((resolve, reject) => {
+            let query = 'doctor';
+            let params = {
+                "near": location,
+                "radius": 5000
+            };
+            this.foursquareClient.getVenues(params, function(error, venues) {
+                let reply = '';
+                if (error) {
+                    console.log(error);
+                    reply = 'Sorry, I couldn\'t find any doctors near you.';
+                }
+                else {
+                    console.log(JSON.stringify(venues.response.venues,null,2));
+                    for (var i=0; i<venues.response.venues.length; i++) {
+                        if (reply.length == 0) {
+                            reply += '\n';
+                        }
+                        reply += venues.response.venues[i].name;
+                    }
+                }
+                resolve(reply);
+            });
+        });
     }
 
     /**

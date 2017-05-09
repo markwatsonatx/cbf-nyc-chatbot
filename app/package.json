@@ -23,6 +23,7 @@
     "dotenv": "^2.0.0",
     "ejs": "^2.5.5",
     "express": "4.13.x",
+    "foursquarevenues": "^3.0.1",
     "slackbots": "^1.0.2",
     "watson-developer-cloud": "^2.31.1",
     "websocket": "^1.0.23"

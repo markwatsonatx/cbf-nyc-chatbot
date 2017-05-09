@@ -11,23 +11,25 @@ html, body {
 
 .chat-container {
 	height: 100%;
-	max-width: 6	00px;
 	padding: 20px;
 	margin: auto;
 }
 
 .chat-message {
-	padding: 0px 0px 0px 10px;
+	padding: 0px;
+	margin: 10px 0px 10px 0px;
 }
 
 .chat-msg-body-bot {
-	background-color: lightcoral;
+	background-color: lightblue;
 	border-radius: 5px;
+	padding: 5px 10px 5px 10px;
 }
 
 .chat-msg-body-user {
-	background-color: lightblue;
+	background-color: lightgray;
 	border-radius: 5px;
+	padding: 5px 10px 5px 10px;
 }
 
 .editor-container {
