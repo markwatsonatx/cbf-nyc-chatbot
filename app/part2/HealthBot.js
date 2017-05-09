@@ -5,7 +5,7 @@ const SlackBot = require('slackbots');
 const WebSocketBotServer = require('./WebSocketBotServer');
 const Foursquare = require('foursquarevenues');
  
-class EventBot {
+class HealthBot {
 
     constructor(userStore, dialogStore, conversationUsername, conversationPassword, conversationWorkspaceId, foursquareClientId, foursquareClientSecret, slackToken, httpServer) {
         this.userStore = userStore;
@@ -194,7 +194,7 @@ class EventBot {
             .then((u) => {
                 user = u;
                 console.log('Sending request to Watson Conversation...');
-                return this.sendRequestToWatsonConversation(user, message);
+                return this.sendRequestToWatsonConversation(message, user.conversationContext);
             })
             .then((response) => {
                 conversationResponse = response;
@@ -217,11 +217,11 @@ class EventBot {
             });
     }
 
-    sendRequestToWatsonConversation(user, message) {
+    sendRequestToWatsonConversation(message, conversationContext) {
         return new Promise((resolve, reject) => {
             var conversationRequest = {
                 input: {text: message},
-                context: user.conversationContext,
+                context: conversationContext,
                 workspace_id: this.conversationWorkspaceId,
             };
             this.conversationService.message(conversationRequest, (error, response) => {
@@ -369,4 +369,4 @@ class EventBot {
     }
 }
 
-module.exports = EventBot;
+module.exports = HealthBot;

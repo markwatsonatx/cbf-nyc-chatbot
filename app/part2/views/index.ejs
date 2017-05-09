@@ -37,8 +37,10 @@
                         <button id="sendmessage" class="btn btn-default" type="submit" class="button_primary" v-on:click="submitMessage">Send</button>
                     </div>
                 </div>
-                <div class="chat-message" v-for="msg in messages">
-                    <div v-bind:class="[msg.isBot ? 'chat-msg-body-bot' : 'chat-msg-body-user']"><b>{{ msg.user }}</b>:<div v-html="msg.msg"></div></div>
+                <div class="chat-message-container">
+                    <div class="chat-message" v-for="msg in messages">
+                        <div v-bind:class="[msg.isBot ? 'chat-msg-body-bot' : 'chat-msg-body-user']"><b>{{ msg.user }}</b>:<div v-html="msg.msg"></div></div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const express = require('express');
 const CloudantDialogStore = require('./CloudantDialogStore');
 const CloudantUserStore = require('./CloudantUserStore');
-const EventBot = require('./EventBot');
+const HealthBot = require('./HealthBot');
 
 const appEnv = cfenv.getAppEnv();
 const app = express();
@@ -14,7 +14,7 @@ const http = require('http').Server(app);
 (function() {
     // load environment variables
     dotenv.config();
-    let eventBot = new EventBot(
+    let healthBot = new HealthBot(
         new CloudantUserStore(process.env.CLOUDANT_URL, process.env.CLOUDANT_USER_DB_NAME),
         new CloudantDialogStore(process.env.CLOUDANT_URL, process.env.CLOUDANT_DIALOG_DB_NAME),
         process.env.CONVERSATION_USERNAME,
@@ -25,7 +25,7 @@ const http = require('http').Server(app);
         process.env.SLACK_BOT_TOKEN,
         http
     );
-    eventBot.run();
+    healthBot.run();
 })();
 
 app.use(express.static(__dirname + '/public'));
