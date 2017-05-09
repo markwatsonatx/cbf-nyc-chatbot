@@ -118,7 +118,7 @@ class MyBot {
         // For example, we may need to return the results of a databse lookup or 3rd party API call.
         // Here we look to see if a custom "action" has been configured in Watson Conversation and if we
         // need to return a custom response based on the action. 
-        const action = conversationResponse.context.myaction;
+        const action = conversationResponse.context.action;
         if (action == "xxx") {
              return this.handleXXXMessage(conversationResponse);
         }
